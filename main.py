@@ -1,3 +1,5 @@
+import os
+import binascii
 from enum import Enum
 from fastapi import Depends, FastAPI, HTTPException, Header, status
 from pydantic import BaseModel
@@ -5,7 +7,14 @@ from EdgeGPT.EdgeGPT import Chatbot, ConversationStyle
 from starlette.requests import Request
 
 
-REQUIRED_TOKEN = "cphovo-e1fecb424bb92b04223f5bc7ebe938d948446e9c"
+def generate_api_token():
+    return 'cphovo-' + binascii.hexlify(os.urandom(20)).decode()
+
+
+REQUIRED_TOKEN = generate_api_token()
+print("====" * 16)
+print(f"\n\t{REQUIRED_TOKEN}\n")
+print("====" * 16)
 
 
 async def verify_token(Authorization: str = Header()):
