@@ -14,7 +14,8 @@ async def verify_token(Authorization: str = Header()):
             detail="Invalid or expired token"
         )
 
-app = FastAPI(dependencies=[Depends(verify_token)])
+app = FastAPI(dependencies=[Depends(verify_token)],
+              docs_url=None, redoc_url=None, openapi_url=None)
 
 
 class Style(str, Enum):
