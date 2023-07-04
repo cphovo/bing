@@ -2,6 +2,7 @@ from enum import Enum
 from fastapi import Depends, FastAPI, HTTPException, Header, status
 from pydantic import BaseModel
 from EdgeGPT.EdgeGPT import Chatbot, ConversationStyle
+from starlette.requests import Request
 
 
 REQUIRED_TOKEN = "cphovo-e1fecb424bb92b04223f5bc7ebe938d948446e9c"
@@ -40,3 +41,9 @@ async def ask(req: AskRequest):
     response = await bot.ask(prompt=req.text, conversation_style=style, simplify_response=True)
     await bot.close()
     return response
+
+
+@app.route("/{path:path}")
+async def catch_all(request: Request):
+    raise HTTPException(
+        status_code=status.HTTP_502_BAD_GATEWAY, detail="Bad Gateway")
