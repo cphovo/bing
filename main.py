@@ -1,3 +1,4 @@
+import json
 import os
 import binascii
 from enum import Enum
@@ -47,8 +48,18 @@ async def ask(req: AskRequest):
         req.style.value,
         ConversationStyle.creative
     )
-    response = await bot.ask(prompt=req.text, conversation_style=style, simplify_response=True)
-    await bot.close()
+    try:
+        response = await bot.ask(prompt=req.text, conversation_style=style, simplify_response=True)
+        await bot.close()
+    except Exception as e:
+        # retry with cookies
+        if os.path.exists("cookies.json"):
+            cookies = json.loads(open("cookies.json", encoding="utf-8").read())
+            bot = await Chatbot.create(cookies=cookies)
+            response = await bot.ask(prompt=req.text, conversation_style=style, simplify_response=True)
+            await bot.close()
+        else:
+            raise e
     return response
 
 
