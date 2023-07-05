@@ -42,18 +42,19 @@ class AskRequest(BaseModel):
 
 @app.post('/bing/ask')
 async def ask(req: AskRequest):
-    bot = await Chatbot.create()
     style = getattr(
         ConversationStyle,
         req.style.value,
         ConversationStyle.creative
     )
     try:
+        bot = await Chatbot.create()
         response = await bot.ask(prompt=req.text, conversation_style=style, simplify_response=True)
         await bot.close()
     except Exception as e:
         # retry with cookies
         if os.path.exists("cookies.json"):
+            print("Using cookies and retring...")
             cookies = json.loads(open("cookies.json", encoding="utf-8").read())
             bot = await Chatbot.create(cookies=cookies)
             response = await bot.ask(prompt=req.text, conversation_style=style, simplify_response=True)
